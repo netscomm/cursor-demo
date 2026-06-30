@@ -8,8 +8,6 @@ description: PR 올리기 전 테스트 실행, 변경 요약, 커밋 메시지 
 
 ## 사전 준비
 
-/classes
-
 1. 프로젝트 루트에서 `git status`와 `git diff`(스테이징·언스테이징 모두)를 실행해 변경 범위를 파악한다.
 2. base 브랜치(`main` 또는 `master`) 대비 변경이 있으면 `git diff main...HEAD`(또는 `master`)도 확인한다.
 
