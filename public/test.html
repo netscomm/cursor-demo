@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>getValidEmails browser test</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 640px; margin: 2rem auto; padding: 0 1rem; }
+    .pass { color: #0a7; }
+    .fail { color: #c00; }
+    li { margin: 0.4rem 0; }
+    #summary { font-weight: 600; margin-top: 1.5rem; }
+  </style>
+</head>
+<body>
+  <h1>getValidEmails browser test</h1>
+  <ul id="results"></ul>
+  <p id="summary"></p>
+
+  <script src="../src/email.js"></script>
+  <script>
+    const { getValidEmails } = window.EmailUtils;
+    const results = document.getElementById('results');
+    const summary = document.getElementById('summary');
+
+    function assertEqual(actual, expected, label) {
+      const pass = JSON.stringify(actual) === JSON.stringify(expected);
+      const li = document.createElement('li');
+      li.className = pass ? 'pass' : 'fail';
+      li.textContent = (pass ? '✓ ' : '✗ ') + label;
+      if (!pass) {
+        li.textContent += ` — expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`;
+      }
+      results.appendChild(li);
+      return pass;
+    }
+
+    let passed = 0;
+    let total = 0;
+
+    function test(label, fn) {
+      total++;
+      if (fn()) passed++;
+    }
+
+    test('valid emails only', () =>
+      assertEqual(
+        getValidEmails([
+          { email: 'valid@example.com' },
+          { email: 'invalid' },
+          { email: 'also@valid.org' },
+        ]),
+        ['valid@example.com', 'also@valid.org'],
+        'filters invalid format'
+      )
+    );
+
+    test('non-array input', () =>
+      assertEqual(getValidEmails(null), [], 'returns [] for null')
+    );
+
+    test('null user entry', () =>
+      assertEqual(
+        getValidEmails([{ email: 'a@b.com' }, null]),
+        ['a@b.com'],
+        'skips null user without throwing'
+      )
+    );
+
+    test('double dot domain', () =>
+      assertEqual(
+        getValidEmails([{ email: 'user@domain..com' }]),
+        [],
+        'rejects consecutive dots'
+      )
+    );
+
+    test('missing email', () =>
+      assertEqual(
+        getValidEmails([{ name: 'no email' }, { email: 'ok@test.com' }]),
+        ['ok@test.com'],
+        'skips users without email'
+      )
+    );
+
+    summary.textContent = `${passed}/${total} tests passed`;
+    summary.className = passed === total ? 'pass' : 'fail';
+    summary.id = 'test-summary';
+  </script>
+</body>
+</html>
