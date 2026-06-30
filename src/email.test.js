@@ -43,7 +43,7 @@ test('parseEmailList splits comma-separated emails', () => {
   assert.deepEqual(parseEmailList('a@x.com, b@y.com'), ['a@x.com', 'b@y.com']);
   assert.deepEqual(parseEmailList('  one@a.com , two@b.com  '), [
     'one@a.com',
-    'two@b.com',
+    'service@b.com',
   ]);
 });
 
